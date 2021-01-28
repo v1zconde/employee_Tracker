@@ -61,6 +61,10 @@ function loadMainMenu() {
             value: "UPDATE_ROLE",
           },
           {
+            name: "Update Employee Manager",
+            value: "UPDATE_MANAGER",
+          },
+          {
             name: "DONE",
             value: "DONE",
           },
@@ -90,19 +94,22 @@ function handleChoices(choices) {
       return addRoles();
 
     case "ADD_EMPLOYEE":
-    return addEmployee();
+      return addEmployee();
 
     case "REMOVE_EMPLOYEE":
-    return delEmployee();
+      return delEmployee();
 
     case "REMOVE_DEPARTMENT":
-    return delDepartment();
+      return delDepartment();
 
     case "REMOVE_ROLE":
-    return delRole();
+      return delRole();
 
     case "UPDATE_ROLE":
     return updRole();
+
+    case "UPDATE_MANAGER":
+    return updManager();
     // case "VIEW_DEPARTMENTS":
     // return viewDepartment();
     case "DONE":
@@ -174,7 +181,6 @@ async function addRoles() {
     });
 }
 
-
 async function addDepartment() {
   inquirer
     .prompt([
@@ -191,208 +197,276 @@ async function addDepartment() {
 }
 
 async function addEmployee() {
-    const Role = await db.findAllRoles();
-    const Manager = await db.findOnlyEmployees();
-    inquirer
-      .prompt([
-        {
-          type: "input",
-          name: "firstName",
-          message: "What the first Name??",
-        },
-        {
-          type: "input",
-          name: "lastName",
-          message: "What the Last Name??",
-        },
-        {
-          name: "role",
-          type: "rawlist",
-          choices: function () {
-            var choiceArray = [];
-            for (var i = 0; i < Role.length; i++) {
-              choiceArray.push(Role[i].title);
-            }
-            return choiceArray;
-          },
-          message: "Whats going to be the role?",
-        },
-        {
-            name: "manChoice",
-            type: "rawlist",
-            choices: function () {
-              var choiceArray = [];
-              for (var i = 0; i < Manager.length; i++) {
-                choiceArray.push(Manager[i].first_name + " " + Manager[i].last_name);
-              }
-              return choiceArray;
-            },
-            message: "Whos the Manager??",
+  const Role = await db.findAllRoles();
+  const Manager = await db.findOnlyEmployees();
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "firstName",
+        message: "What the first Name??",
+      },
+      {
+        type: "input",
+        name: "lastName",
+        message: "What the Last Name??",
+      },
+      {
+        name: "role",
+        type: "rawlist",
+        choices: function () {
+          var choiceArray = [];
+          for (var i = 0; i < Role.length; i++) {
+            choiceArray.push(Role[i].title);
           }
-      ])
-      .then((response) => {
-        var chosenRole;
-        for (var i = 0; i < Role.length; i++) {
-          if (Role[i].name === response.title) {
-            chosenRole = Role[i].id;
+          return choiceArray;
+        },
+        message: "Whats going to be the role?",
+      },
+      {
+        name: "manChoice",
+        type: "rawlist",
+        choices: function () {
+          var choiceArray = [];
+          for (var i = 0; i < Manager.length; i++) {
+            choiceArray.push(
+              Manager[i].first_name + " " + Manager[i].last_name
+            );
           }
+          return choiceArray;
+        },
+        message: "Whos the Manager??",
+      },
+    ])
+    .then((response) => {
+      var chosenRole;
+      for (var i = 0; i < Role.length; i++) {
+        if (Role[i].name === response.title) {
+          chosenRole = Role[i].id;
         }
-        var chosenManager;
-        for (var i = 0; i < Manager.length; i++) {
-          if (Manager[i].first_name + " " + Manager[i].last_name === response.manChoice) {
-            chosenManager = Manager[i].id;
-          }
+      }
+      var chosenManager;
+      for (var i = 0; i < Manager.length; i++) {
+        if (
+          Manager[i].first_name + " " + Manager[i].last_name ===
+          response.manChoice
+        ) {
+          chosenManager = Manager[i].id;
         }
-        console.log(chosenRole, chosenManager);
-        const newEmployee = db.addNewEmployee(
-          response.firstName,
-          response.lastName,
-          chosenRole, chosenManager
-        );
-        loadMainMenu();
-      });
-  }
+      }
+      console.log(chosenRole, chosenManager);
+      const newEmployee = db.addNewEmployee(
+        response.firstName,
+        response.lastName,
+        chosenRole,
+        chosenManager
+      );
+      loadMainMenu();
+    });
+}
 
-
-
-  
 async function delEmployee() {
+  const Employee = await db.findOnlyEmployees();
+  inquirer
+    .prompt([
+      {
+        name: "choice",
+        type: "rawlist",
+        choices: function () {
+          var choiceArray = [];
+          for (var i = 0; i < Employee.length; i++) {
+            choiceArray.push(
+              Employee[i].first_name + " " + Employee[i].last_name
+            );
+          }
+          return choiceArray;
+        },
+        message: "What employee want to fire??",
+      },
+    ])
+    .then((response) => {
+      var fireEmployee;
+      for (var i = 0; i < Employee.length; i++) {
+        if (
+          Employee[i].first_name + " " + Employee[i].last_name ===
+          response.choice
+        ) {
+          fireEmployee = Employee[i].id;
+        }
+      }
+      console.log(fireEmployee);
+      const firedEmployee = db.removeEmployee(fireEmployee);
+      loadMainMenu();
+    });
+}
+
+async function delRole() {
+  const Role = await db.findAllRoles();
+  inquirer
+    .prompt([
+      {
+        name: "choice",
+        type: "rawlist",
+        choices: function () {
+          var choiceArray = [];
+          for (var i = 0; i < Role.length; i++) {
+            choiceArray.push(Role[i].title);
+          }
+          return choiceArray;
+        },
+        message: "What role you want to delete??",
+      },
+    ])
+    .then((response) => {
+      var fireRole;
+      for (var i = 0; i < Role.length; i++) {
+        if (Role[i].title === response.choice) {
+          fireRole = Role[i].id;
+        }
+      }
+      const firedRole = db.removeRole(fireRole);
+      loadMainMenu();
+    });
+}
+
+async function delDepartment() {
+  const Dept = await db.findAllDepartment();
+  inquirer
+    .prompt([
+      {
+        name: "choice",
+        type: "rawlist",
+        choices: function () {
+          var choiceArray = [];
+          for (var i = 0; i < Dept.length; i++) {
+            choiceArray.push(Dept[i].name);
+          }
+          return choiceArray;
+        },
+        message: "Which department you want to delete??",
+      },
+    ])
+    .then((response) => {
+      var depart;
+      for (var i = 0; i < Dept.length; i++) {
+        if (Dept[i].name === response.choice) {
+          depart = Dept[i].id;
+        }
+      }
+      const deleteDept = db.removeDepartment(depart);
+      loadMainMenu();
+    });
+}
+
+async function updRole() {
+  const Role = await db.findAllRoles();
+  const Employee = await db.findOnlyEmployees();
+  inquirer
+    .prompt([
+      {
+        name: "employee",
+        type: "rawlist",
+        choices: function () {
+          var choiceArray = [];
+          for (var i = 0; i < Employee.length; i++) {
+            choiceArray.push(
+              Employee[i].first_name + " " + Employee[i].last_name
+            );
+          }
+          return choiceArray;
+        },
+        message: "Whos the Employee??",
+      },
+      {
+        name: "role",
+        type: "rawlist",
+        choices: function () {
+          var choiceArray = [];
+          for (var i = 0; i < Role.length; i++) {
+            choiceArray.push(Role[i].title);
+          }
+          return choiceArray;
+        },
+        message: "Whats going to be the role?",
+      },
+    ])
+    .then((response) => {
+      var chosenRole;
+      for (var i = 0; i < Role.length; i++) {
+        if (Role[i].title === response.role) {
+          chosenRole = Role[i].id;
+        }
+      }
+      var chosenEmployee;
+      for (var i = 0; i < Employee.length; i++) {
+        if (
+          Employee[i].first_name + " " + Employee[i].last_name ===
+          response.employee
+        ) {
+          chosenEmployee = Employee[i].id;
+        }
+      }
+      console.log(chosenEmployee, chosenRole + "Test");
+      const updateRole = db.updateRole(chosenRole, chosenEmployee);
+      loadMainMenu();
+    });
+}
+
+
+async function updManager() {
     const Employee = await db.findOnlyEmployees();
+    const EmployeeManager = await db.findOnlyEmployees();
     inquirer
       .prompt([
         {
-          name: "choice",
+          name: "employee",
           type: "rawlist",
           choices: function () {
             var choiceArray = [];
             for (var i = 0; i < Employee.length; i++) {
-              choiceArray.push(Employee[i].first_name + " " + Employee[i].last_name);
+              choiceArray.push(
+                Employee[i].first_name + " " + Employee[i].last_name
+              );
             }
             return choiceArray;
           },
-          message: "What employee want to fire??",
-        }
-      ])
-      .then((response) => {
-        var fireEmployee;
-        for (var i = 0; i < Employee.length; i++) {
-          if (Employee[i].first_name + " " + Employee[i].last_name === response.choice) {
-            fireEmployee = Employee[i].id;
-          }
-        }
-        console.log(fireEmployee);
-        const firedEmployee = db.removeEmployee(fireEmployee);
-        loadMainMenu();
-      });
-  }
-
-  async function delRole() {
-    const Role = await db.findAllRoles();
-    inquirer
-      .prompt([
+          message: "Whos the Employee??",
+        },
         {
-          name: "choice",
+          name: "manager",
           type: "rawlist",
           choices: function () {
             var choiceArray = [];
-            for (var i = 0; i < Role.length; i++) {
-              choiceArray.push(Role[i].title);
-            }
+            for (var i = 0; i < EmployeeManager.length; i++) {
+                choiceArray.push(
+                    EmployeeManager[i].first_name + " " + EmployeeManager[i].last_name
+                  );
+                }
             return choiceArray;
           },
-          message: "What role you want to delete??",
+          message: "Whats going to be the Manager?",
         }
       ])
       .then((response) => {
-        var fireRole;
-        for (var i = 0; i < Role.length; i++) {
-          if (Role[i].title === response.choice) {
-            fireRole = Role[i].id;
-          }
-        }
-        const firedRole = db.removeRole(fireRole);
-        loadMainMenu();
-      });
-  }
-
-  async function delDepartment() {
-    const Dept = await db.findAllDepartment();
-    inquirer
-      .prompt([
-        {
-          name: "choice",
-          type: "rawlist",
-          choices: function () {
-            var choiceArray = [];
-            for (var i = 0; i < Dept.length; i++) {
-              choiceArray.push(Dept[i].name);
-            }
-            return choiceArray;
-          },
-          message: "Which department you want to delete??",
-        }
-      ])
-      .then((response) => {
-        var depart;
-        for (var i = 0; i < Dept.length; i++) {
-          if (Dept[i].name === response.choice) {
-            depart = Dept[i].id;
-          }
-        }
-        const deleteDept = db.removeDepartment(depart);
-        loadMainMenu();
-      });
-  }
-
-
-
-  
-async function updRole() {
-    const Role = await db.findAllRoles();
-    const Employee = await db.findOnlyEmployees();
-    inquirer
-      .prompt([
-        {
-            name: "employee",
-            type: "rawlist",
-            choices: function () {
-              var choiceArray = [];
-              for (var i = 0; i < Employee.length; i++) {
-                choiceArray.push(Employee[i].first_name + " " + Employee[i].last_name);
-              }
-              return choiceArray;
-            },
-            message: "Whos the Employee??",
-          },
-        {
-          name: "role",
-          type: "rawlist",
-          choices: function () {
-            var choiceArray = [];
-            for (var i = 0; i < Role.length; i++) {
-              choiceArray.push(Role[i].title);
-            }
-            return choiceArray;
-          },
-          message: "Whats going to be the role?",
-        }
-        
-      ])
-      .then((response) => {
-        var chosenRole;
-        for (var i = 0; i < Role.length; i++) {
-          if (Role[i].title === response.role) {
-            chosenRole = Role[i].id;
+        var chosenManager;
+        for (var i = 0; i < EmployeeManager.length; i++) {
+          if (
+            EmployeeManager[i].first_name + " " + EmployeeManager[i].last_name ===
+            response.manager) {
+            chosenManager = EmployeeManager[i].id;
           }
         }
         var chosenEmployee;
         for (var i = 0; i < Employee.length; i++) {
-          if (Employee[i].first_name + " " + Employee[i].last_name === response.employee) {
+          if (
+            Employee[i].first_name + " " + Employee[i].last_name ===
+            response.employee
+          ) {
             chosenEmployee = Employee[i].id;
           }
         }
-        console.log(chosenEmployee, chosenRole + "Test");
-        const updateRole = db.updateRole(chosenRole, chosenEmployee);
+        console.log(chosenEmployee, chosenManager + "Test");
+        const updateRole = db.updateManager(chosenManager, chosenEmployee);
         loadMainMenu();
       });
   }

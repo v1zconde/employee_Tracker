@@ -67,6 +67,12 @@ class DB {
       [role, id],
     );
   }
+  updateManager(manager, id) {
+    return this.connection.query(
+      "UPDATE employee SET manager_id = ? WHERE id = ?",
+      [manager, id],
+    );
+  }
 }
 
 module.exports = new DB(connection);
