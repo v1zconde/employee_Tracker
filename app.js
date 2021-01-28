@@ -146,53 +146,6 @@ async function addRoles() {
     });
 }
 
-async function addEmployee() {
-  const Role1 = await db.findAllRoles();
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "firstName",
-        message: "What the first Name??",
-      },
-      {
-        type: "input",
-        name: "lastName",
-        message: "What the Last Name??",
-      },
-      {
-        name: "choice",
-        type: "rawlist",
-        choices: function () {
-          var choiceArray = [];
-          for (var i = 0; i < Role1.length; i++) {
-            choiceArray.push(Role1[i].name);
-          }
-          return choiceArray;
-        },
-        message: "What department would you like to add the role?",
-      },
-    ])
-    .then((response) => {
-      console.log(response.choice);
-      console.log(Role1[0].id + "id");
-      var chosenRole;
-      for (var i = 0; i < Role1.length; i++) {
-        if (Role1[i].name === response.choice) {
-          chosenRole = Role1[i].id;
-        }
-      }
-      const newEmployee = db.addNewEmployee(
-        response.firstName,
-        response.lastName,
-        chosenRole
-      );
-      console.log("\n");
-      console.log(newEmployee);
-      //console.table(newRole)
-      loadMainMenu();
-    });
-}
 
 async function addDepartment() {
   inquirer
@@ -211,3 +164,71 @@ async function addDepartment() {
       loadMainMenu();
     });
 }
+
+
+
+
+async function addEmployee() {
+    const Role1 = await db.findAllRoles();
+    const Manager = await db.findAllEmployees();
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "firstName",
+          message: "What the first Name??",
+        },
+        {
+          type: "input",
+          name: "lastName",
+          message: "What the Last Name??",
+        },
+        {
+          name: "role",
+          type: "rawlist",
+          choices: function () {
+            var choiceArray = [];
+            for (var i = 0; i < Role1.length; i++) {
+              choiceArray.push(Role1[i].name);
+            }
+            return choiceArray;
+          },
+          message: "Whats going to be the role?",
+        },
+        {
+            name: "manChoice",
+            type: "rawlist",
+            choices: function () {
+              var choiceArray = [];
+              for (var i = 0; i < Manager.length; i++) {
+                choiceArray.push(Manager[i].name);
+              }
+              return choiceArray;
+            },
+            message: "Whos the Manager??",
+          },
+      ])
+      .then((response) => {
+        var chosenRole;
+        for (var i = 0; i < Role1.length; i++) {
+          if (Role1[i].name === response.role) {
+            chosenRole = Role1[i].id;
+          }
+        }
+        var chosenManager;
+        for (var i = 0; i < Manager.length; i++) {
+          if (Manager[i].name === response.manChoice) {
+            chosenManager = Manager[i].id;
+          }
+        }
+        const newEmployee = db.addNewEmployee(
+          response.firstName,
+          response.lastName,
+          chosenRole, chosenManager
+        );
+        console.log("\n");
+        console.log(newEmployee);
+        //console.table(newRole)
+        loadMainMenu();
+      });
+  }
