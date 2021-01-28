@@ -41,7 +41,7 @@ function loadMainMenu() {
             value: "ADD_ROLE",
           },
           {
-            name: "Add EMPLOYEE",
+            name: "Add Employee",
             value: "ADD_EMPLOYEE",
           },
           {
@@ -100,6 +100,9 @@ function handleChoices(choices) {
 
     case "REMOVE_ROLE":
     return delRole();
+
+    case "UPDATE_ROLE":
+    return updRole();
     // case "VIEW_DEPARTMENTS":
     // return viewDepartment();
     case "DONE":
@@ -186,9 +189,6 @@ async function addDepartment() {
       loadMainMenu();
     });
 }
-
-
-
 
 async function addEmployee() {
     const Role = await db.findAllRoles();
@@ -340,6 +340,59 @@ async function delEmployee() {
           }
         }
         const deleteDept = db.removeDepartment(depart);
+        loadMainMenu();
+      });
+  }
+
+
+
+  
+async function updRole() {
+    const Role = await db.findAllRoles();
+    const Employee = await db.findOnlyEmployees();
+    inquirer
+      .prompt([
+        {
+            name: "employee",
+            type: "rawlist",
+            choices: function () {
+              var choiceArray = [];
+              for (var i = 0; i < Employee.length; i++) {
+                choiceArray.push(Employee[i].first_name + " " + Employee[i].last_name);
+              }
+              return choiceArray;
+            },
+            message: "Whos the Employee??",
+          },
+        {
+          name: "role",
+          type: "rawlist",
+          choices: function () {
+            var choiceArray = [];
+            for (var i = 0; i < Role.length; i++) {
+              choiceArray.push(Role[i].title);
+            }
+            return choiceArray;
+          },
+          message: "Whats going to be the role?",
+        }
+        
+      ])
+      .then((response) => {
+        var chosenRole;
+        for (var i = 0; i < Role.length; i++) {
+          if (Role[i].title === response.role) {
+            chosenRole = Role[i].id;
+          }
+        }
+        var chosenEmployee;
+        for (var i = 0; i < Employee.length; i++) {
+          if (Employee[i].first_name + " " + Employee[i].last_name === response.employee) {
+            chosenEmployee = Employee[i].id;
+          }
+        }
+        console.log(chosenEmployee, chosenRole + "Test");
+        const updateRole = db.updateRole(chosenRole, chosenEmployee);
         loadMainMenu();
       });
   }
