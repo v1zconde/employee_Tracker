@@ -43,6 +43,18 @@ class DB {
       [first, last, role, manager],
     );
   }
+  removeEmployee(id) {
+    return this.connection.query(
+      "DELETE FROM employee WHERE id = (?)",
+      [id],
+    );
+  }
+  removeRole(id) {
+    return this.connection.query(
+      "DELETE FROM role WHERE id = (?)",
+      [id],
+    );
+  }
 }
 
 module.exports = new DB(connection);

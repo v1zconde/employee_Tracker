@@ -45,6 +45,14 @@ function loadMainMenu() {
             value: "ADD_EMPLOYEE",
           },
           {
+            name: "Remove Employee",
+            value: "REMOVE_EMPLOYEE",
+          },
+          {
+            name: "Remove Role",
+            value: "REMOVE_ROLE",
+          },
+          {
             name: "Update Employee Role",
             value: "UPDATE_ROLE",
           },
@@ -80,8 +88,14 @@ function handleChoices(choices) {
     case "ADD_EMPLOYEE":
     return addEmployee();
 
+    case "REMOVE_EMPLOYEE":
+    return delEmployee();
+
+    case "REMOVE_EMPLOYEE":
+    return delEmployee();
+
     case "UPDATE_ROLE":
-    return updateRole();
+    return delRole();
     // case "VIEW_DEPARTMENTS":
     // return viewDepartment();
     case "DONE":
@@ -237,6 +251,72 @@ async function addEmployee() {
           chosenRole, chosenManager
         );
         console.table(newEmployee);
+        console.log("\n");
+        loadMainMenu();
+      });
+  }
+
+
+
+  
+async function delEmployee() {
+    const Employee = await db.findOnlyEmployees();
+    inquirer
+      .prompt([
+        {
+          name: "choice",
+          type: "rawlist",
+          choices: function () {
+            var choiceArray = [];
+            for (var i = 0; i < Employee.length; i++) {
+              choiceArray.push(Employee[i].first_name + " " + Employee[i].last_name);
+            }
+            return choiceArray;
+          },
+          message: "What employee want to fire??",
+        }
+      ])
+      .then((response) => {
+        var fireEmployee;
+        for (var i = 0; i < Employee.length; i++) {
+          if (Employee[i].first_name + " " + Employee[i].last_name === response.choice) {
+            fireEmployee = Employee[i].id;
+          }
+        }
+        console.log(fireEmployee);
+        const firedEmployee = db.removeEmployee(fireEmployee);
+        console.table(firedEmployee);
+        console.log("\n");
+        loadMainMenu();
+      });
+  }
+
+  async function delRole() {
+    const Role = await db.findAllRoles();
+    inquirer
+      .prompt([
+        {
+          name: "choice",
+          type: "rawlist",
+          choices: function () {
+            var choiceArray = [];
+            for (var i = 0; i < Role.length; i++) {
+              choiceArray.push(Role[i].title);
+            }
+            return choiceArray;
+          },
+          message: "What role you want to delete??",
+        }
+      ])
+      .then((response) => {
+        var fireRole;
+        for (var i = 0; i < Role.length; i++) {
+          if (Role[i].title === response.choice) {
+            fireRole = Role[i].id;
+          }
+        }
+        const firedRole = db.removeRole(fireRole);
+        console.table(firedRole);
         console.log("\n");
         loadMainMenu();
       });
