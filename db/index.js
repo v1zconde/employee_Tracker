@@ -73,6 +73,17 @@ class DB {
       [manager, id],
     );
   }
+  findAllManagers() {
+    return this.connection.query(
+      "SELECT id, first_name, last_name FROM employee WHERE (id in (select manager_id from employee))"
+    );
+  }
+  employeePorManager(manager) {
+    return this.connection.query(
+      "SELECT CONCAT(first_name, ' ' ,  last_name) As name FROM employee WHERE manager_id = ? ",
+      [manager],
+    );
+  }
 }
 
 module.exports = new DB(connection);

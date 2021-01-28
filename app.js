@@ -65,6 +65,10 @@ function loadMainMenu() {
             value: "UPDATE_MANAGER",
           },
           {
+            name: "Employees by Manager",
+            value: "EMPLOYEES_BY_MANAGER",
+          },
+          {
             name: "DONE",
             value: "DONE",
           },
@@ -107,9 +111,12 @@ function handleChoices(choices) {
 
     case "UPDATE_ROLE":
     return updRole();
-
+    
     case "UPDATE_MANAGER":
     return updManager();
+
+    case "EMPLOYEES_BY_MANAGER":
+    return employeesByManager();
     // case "VIEW_DEPARTMENTS":
     // return viewDepartment();
     case "DONE":
@@ -469,4 +476,45 @@ async function updManager() {
         const updateRole = db.updateManager(chosenManager, chosenEmployee);
         loadMainMenu();
       });
+  }
+
+
+  async function employeesByManager(){
+      const EmployeeManager = await db.findAllManagers();
+    inquirer
+      .prompt([
+        {
+          name: "manager",
+          type: "rawlist",
+          choices: function () {
+            var choiceArray = [];
+            for (var i = 0; i < EmployeeManager.length; i++) {
+                choiceArray.push(
+                    EmployeeManager[i].first_name + " " + EmployeeManager[i].last_name
+                  );
+                }
+            return choiceArray;
+          },
+          message: "Which Manager employees you want to see??",
+        }
+      ])
+      .then( async (response) => {
+        var chosenManager;
+        for (var i = 0; i < EmployeeManager.length; i++) {
+          if (
+            EmployeeManager[i].first_name + " " + EmployeeManager[i].last_name ===
+            response.manager) {
+            chosenManager = EmployeeManager[i].id;
+          }
+        }
+        const emploByManager = await db.employeePorManager(chosenManager);
+        console.log("\n");
+        console.log("Employees of the Manager " + response.manager);
+        console.log("---------------")
+        console.table(emploByManager);
+        console.log("---------------")
+        loadMainMenu();
+      });
+
+
   }
