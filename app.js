@@ -53,6 +53,10 @@ function loadMainMenu() {
             value: "REMOVE_ROLE",
           },
           {
+            name: "Remove Department",
+            value: "REMOVE_DEPARTMENT",
+          },
+          {
             name: "Update Employee Role",
             value: "UPDATE_ROLE",
           },
@@ -91,10 +95,10 @@ function handleChoices(choices) {
     case "REMOVE_EMPLOYEE":
     return delEmployee();
 
-    case "REMOVE_EMPLOYEE":
-    return delEmployee();
+    case "REMOVE_DEPARTMENT":
+    return delDepartment();
 
-    case "UPDATE_ROLE":
+    case "REMOVE_ROLE":
     return delRole();
     // case "VIEW_DEPARTMENTS":
     // return viewDepartment();
@@ -179,9 +183,6 @@ async function addDepartment() {
     ])
     .then((response) => {
       const newDepartment = db.addNewDepartment(response.newDepartment);
-      console.log("\n");
-      console.log(newDepartment);
-      //console.table(newRole)
       loadMainMenu();
     });
 }
@@ -191,9 +192,7 @@ async function addDepartment() {
 
 async function addEmployee() {
     const Role = await db.findAllRoles();
-    console.table(Role);
     const Manager = await db.findOnlyEmployees();
-    console.table(Manager);
     inquirer
       .prompt([
         {
@@ -250,8 +249,6 @@ async function addEmployee() {
           response.lastName,
           chosenRole, chosenManager
         );
-        console.table(newEmployee);
-        console.log("\n");
         loadMainMenu();
       });
   }
@@ -285,8 +282,6 @@ async function delEmployee() {
         }
         console.log(fireEmployee);
         const firedEmployee = db.removeEmployee(fireEmployee);
-        console.table(firedEmployee);
-        console.log("\n");
         loadMainMenu();
       });
   }
@@ -316,8 +311,35 @@ async function delEmployee() {
           }
         }
         const firedRole = db.removeRole(fireRole);
-        console.table(firedRole);
-        console.log("\n");
+        loadMainMenu();
+      });
+  }
+
+  async function delDepartment() {
+    const Dept = await db.findAllDepartment();
+    inquirer
+      .prompt([
+        {
+          name: "choice",
+          type: "rawlist",
+          choices: function () {
+            var choiceArray = [];
+            for (var i = 0; i < Dept.length; i++) {
+              choiceArray.push(Dept[i].name);
+            }
+            return choiceArray;
+          },
+          message: "Which department you want to delete??",
+        }
+      ])
+      .then((response) => {
+        var depart;
+        for (var i = 0; i < Dept.length; i++) {
+          if (Dept[i].name === response.choice) {
+            depart = Dept[i].id;
+          }
+        }
+        const deleteDept = db.removeDepartment(depart);
         loadMainMenu();
       });
   }

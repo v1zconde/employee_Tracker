@@ -49,6 +49,12 @@ class DB {
       [id],
     );
   }
+  removeDepartment(id) {
+    return this.connection.query(
+      "DELETE FROM department WHERE id = (?)",
+      [id],
+    );
+  }
   removeRole(id) {
     return this.connection.query(
       "DELETE FROM role WHERE id = (?)",
