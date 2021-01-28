@@ -10,6 +10,11 @@ class DB {
       "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department on role.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;"
     );
   }
+  findOnlyEmployees() {
+    return this.connection.query(
+      "SELECT employee.id, employee.first_name, employee.last_name FROM employee ORDER BY employee.id;"
+      );
+  }
   findAllRoles() {
     return this.connection.query(
       "SELECT role.id, role.title, role.salary FROM role ORDER BY role.id;"

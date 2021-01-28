@@ -45,6 +45,10 @@ function loadMainMenu() {
             value: "ADD_EMPLOYEE",
           },
           {
+            name: "Update Employee Role",
+            value: "UPDATE_ROLE",
+          },
+          {
             name: "DONE",
             value: "DONE",
           },
@@ -74,7 +78,10 @@ function handleChoices(choices) {
       return addRoles();
 
     case "ADD_EMPLOYEE":
-      return addEmployee();
+    return addEmployee();
+
+    case "UPDATE_ROLE":
+    return updateRole();
     // case "VIEW_DEPARTMENTS":
     // return viewDepartment();
     case "DONE":
@@ -169,8 +176,10 @@ async function addDepartment() {
 
 
 async function addEmployee() {
-    const Role1 = await db.findAllRoles();
-    const Manager = await db.findAllEmployees();
+    const Role = await db.findAllRoles();
+    console.table(Role);
+    const Manager = await db.findOnlyEmployees();
+    console.table(Manager);
     inquirer
       .prompt([
         {
@@ -188,8 +197,8 @@ async function addEmployee() {
           type: "rawlist",
           choices: function () {
             var choiceArray = [];
-            for (var i = 0; i < Role1.length; i++) {
-              choiceArray.push(Role1[i].name);
+            for (var i = 0; i < Role.length; i++) {
+              choiceArray.push(Role[i].title);
             }
             return choiceArray;
           },
@@ -201,34 +210,34 @@ async function addEmployee() {
             choices: function () {
               var choiceArray = [];
               for (var i = 0; i < Manager.length; i++) {
-                choiceArray.push(Manager[i].name);
+                choiceArray.push(Manager[i].first_name + " " + Manager[i].last_name);
               }
               return choiceArray;
             },
             message: "Whos the Manager??",
-          },
+          }
       ])
       .then((response) => {
         var chosenRole;
-        for (var i = 0; i < Role1.length; i++) {
-          if (Role1[i].name === response.role) {
-            chosenRole = Role1[i].id;
+        for (var i = 0; i < Role.length; i++) {
+          if (Role[i].name === response.title) {
+            chosenRole = Role[i].id;
           }
         }
         var chosenManager;
         for (var i = 0; i < Manager.length; i++) {
-          if (Manager[i].name === response.manChoice) {
+          if (Manager[i].first_name + " " + Manager[i].last_name === response.manChoice) {
             chosenManager = Manager[i].id;
           }
         }
+        console.log(chosenRole, chosenManager);
         const newEmployee = db.addNewEmployee(
           response.firstName,
           response.lastName,
           chosenRole, chosenManager
         );
+        console.table(newEmployee);
         console.log("\n");
-        console.log(newEmployee);
-        //console.table(newRole)
         loadMainMenu();
       });
   }
