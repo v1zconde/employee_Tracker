@@ -80,8 +80,13 @@ class DB {
   }
   employeePorManager(manager) {
     return this.connection.query(
-      "SELECT CONCAT(first_name, ' ' ,  last_name) As name FROM employee WHERE manager_id = ? ",
+      "SELECT CONCAT(first_name,' ',  last_name) As name FROM employee WHERE manager_id = ? ",
       [manager],
+    );
+  }
+  salarybyDepartment() {
+    return this.connection.query(
+      "select department.name, sum(role.salary) As Total_salary from employee left join role on employee.role_id = role.id left join department on department_id = department.id group by department.name",
     );
   }
 }

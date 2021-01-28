@@ -69,6 +69,10 @@ function loadMainMenu() {
             value: "EMPLOYEES_BY_MANAGER",
           },
           {
+            name: "Total Salary by Department",
+            value: "SALARY_BY_DEPARTMENT",
+          },
+          {
             name: "DONE",
             value: "DONE",
           },
@@ -117,6 +121,9 @@ function handleChoices(choices) {
 
     case "EMPLOYEES_BY_MANAGER":
     return employeesByManager();
+
+    case "SALARY_BY_DEPARTMENT":
+    return totalSalary();
     // case "VIEW_DEPARTMENTS":
     // return viewDepartment();
     case "DONE":
@@ -515,6 +522,12 @@ async function updManager() {
         console.log("---------------")
         loadMainMenu();
       });
+  }
 
 
+  async function totalSalary() {
+    const salary = await db.salarybyDepartment();
+    console.log("\n");
+    console.table(salary);
+    loadMainMenu();
   }
