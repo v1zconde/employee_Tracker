@@ -16,7 +16,7 @@ npm start || node app.js
   3. [How to Install](#how-to-install)
   4. [How to Use](#how-to-use)
   5. [Submission](#submission)
-  6. [Example](#example)
+  6. [Example Schema](#example-schema)
   7. [Questions](#questions)
 
 ## User Story
@@ -68,13 +68,13 @@ Github Repo URL:
 [https://github.com/v1zconde/employee_Tracker](https://github.com/v1zconde/employee_Tracker)
 
 How to use Video: 
-[Watch Video](h)
+[Watch Video](https://drive.google.com/file/d/1585vLDFWIqj2AOY8yCYOHdb8PJXKOc70/view)
 
-![Example Video](.)
+### Example Schema
 
-## Example
+![Schema](./Assets/schema.png)
 ---
-### Employee Summary
+### All Employees Table
 ![Table Example](./Assets/employee-table.png)
 
 
