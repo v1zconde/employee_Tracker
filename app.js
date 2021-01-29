@@ -131,6 +131,9 @@ function handleChoices(choices) {
   }
 }
 
+
+
+
 async function viewEmployees() {
   const employee = await db.findAllEmployees();
   console.log("\n");
