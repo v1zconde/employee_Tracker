@@ -19,7 +19,7 @@ class DB {
   //query for all roles
   findAllRoles() {
     return this.connection.query(
-      "SELECT id, title, salary FROM role ORDER BY role.id;"
+      "select role.id, role.title, role.salary, department.name from role left join department on role.department_id = department.id ORDER BY role.id;"
     );
   }
   //query all department
