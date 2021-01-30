@@ -5,13 +5,13 @@ const connection = require("./db/connection");
 require("console.table");
 
 init();
-
+//initial function
 function init() {
   const logoText = logo({ name: "Rafa Employee Manager" }).render();
   console.log(logoText);
   loadMainMenu();
 }
-
+//load all the questions
 function loadMainMenu() {
   inquirer
     .prompt([
@@ -83,7 +83,7 @@ function loadMainMenu() {
       handleChoices(response);
     });
 }
-
+//all call of functions
 function handleChoices(choices) {
   switch (choices.choice) {
     case "VIEW_EMPLOYEES":
@@ -130,31 +130,28 @@ function handleChoices(choices) {
       return connection.end();
   }
 }
-
-
-
-
+//view all employees with all the info
 async function viewEmployees() {
   const employee = await db.findAllEmployees();
   console.log("\n");
   console.table(employee);
   loadMainMenu();
 }
-
+//view all departments
 async function viewDepartment() {
   const department = await db.findAllDepartment();
   console.log("\n");
   console.table(department);
   loadMainMenu();
 }
-
+//view all the roles
 async function viewRoles() {
   const role = await db.findAllRoles();
   console.log("\n");
   console.table(role);
   loadMainMenu();
 }
-
+//add roles function
 async function addRoles() {
   const department1 = await db.findAllDepartment();
   inquirer
@@ -197,7 +194,7 @@ async function addRoles() {
       loadMainMenu();
     });
 }
-
+//add department function
 async function addDepartment() {
   inquirer
     .prompt([
@@ -212,7 +209,7 @@ async function addDepartment() {
       loadMainMenu();
     });
 }
-
+//add employee function
 async function addEmployee() {
   const Role = await db.findAllRoles();
   const Manager = await db.findOnlyEmployees();
@@ -281,7 +278,7 @@ async function addEmployee() {
       loadMainMenu();
     });
 }
-
+//delete employee function
 async function delEmployee() {
   const Employee = await db.findOnlyEmployees();
   inquirer
@@ -316,7 +313,7 @@ async function delEmployee() {
       loadMainMenu();
     });
 }
-
+//delete Role function
 async function delRole() {
   const Role = await db.findAllRoles();
   inquirer
@@ -345,7 +342,7 @@ async function delRole() {
       loadMainMenu();
     });
 }
-
+//delete department function
 async function delDepartment() {
   const Dept = await db.findAllDepartment();
   inquirer
@@ -374,7 +371,7 @@ async function delDepartment() {
       loadMainMenu();
     });
 }
-
+//update role of employee function
 async function updRole() {
   const Role = await db.findAllRoles();
   const Employee = await db.findOnlyEmployees();
@@ -429,7 +426,7 @@ async function updRole() {
     });
 }
 
-
+//update employee manager function
 async function updManager() {
     const Employee = await db.findOnlyEmployees();
     const EmployeeManager = await db.findOnlyEmployees();
@@ -488,7 +485,7 @@ async function updManager() {
       });
   }
 
-
+//see employees by manager
   async function employeesByManager(){
       const EmployeeManager = await db.findAllManagers();
     inquirer
@@ -527,7 +524,7 @@ async function updManager() {
       });
   }
 
-
+//see all Salary by Department
   async function totalSalary() {
     const salary = await db.salarybyDepartment();
     console.log("\n");
