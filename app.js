@@ -69,6 +69,10 @@ function loadMainMenu() {
             value: "EMPLOYEES_BY_MANAGER",
           },
           {
+            name: "All Manages with Employees",
+            value: "EMPLOYEES_AND_MANAGER",
+          },
+          {
             name: "Total Salary by Department",
             value: "SALARY_BY_DEPARTMENT",
           },
@@ -122,6 +126,9 @@ function handleChoices(choices) {
     case "EMPLOYEES_BY_MANAGER":
     return employeesByManager();
 
+    case "EMPLOYEES_AND_MANAGER":
+    return employeeAndManager();
+    
     case "SALARY_BY_DEPARTMENT":
     return totalSalary();
     // case "VIEW_DEPARTMENTS":
@@ -142,6 +149,13 @@ async function viewDepartment() {
   const department = await db.findAllDepartment();
   console.log("\n");
   console.table(department);
+  loadMainMenu();
+}
+//show all managers with their employees
+async function employeeAndManager() {
+  const managerPlusEmployee = await db.managersAndEmployees();
+  console.log("\n");
+  console.table(managerPlusEmployee);
   loadMainMenu();
 }
 //view all the roles
